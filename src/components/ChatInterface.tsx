@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 const initialMessages: Message[] = [
   {
     id: '1',
-    text: "Hello! I'm MindfulAI, your mental wellness companion. How are you feeling today?",
+    text: "Hello! I'm MindfulAI, your mental wellness companion. How are you feeling today? You can also ask me about mental health topics like 'What is depression?' or 'Tell me about anxiety'.",
     sender: 'bot',
     timestamp: new Date()
   }
@@ -78,11 +78,13 @@ const ChatInterface: React.FC = () => {
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`chat-bubble ${
-                message.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot'
+              className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                message.sender === 'user' 
+                  ? 'bg-wellness-600 text-white' 
+                  : 'bg-gray-100 text-gray-800'
               }`}
             >
-              <p>{message.text}</p>
+              <p className="whitespace-pre-wrap">{message.text}</p>
               <div
                 className={`text-xs mt-1 ${
                   message.sender === 'user' ? 'text-wellness-100' : 'text-gray-400'
@@ -99,7 +101,7 @@ const ChatInterface: React.FC = () => {
         
         {isTyping && (
           <div className="flex justify-start">
-            <div className="chat-bubble chat-bubble-bot flex items-center gap-2">
+            <div className="max-w-[80%] rounded-lg px-4 py-2 bg-gray-100 text-gray-800 flex items-center gap-2">
               <div className="w-2 h-2 bg-wellness-500 rounded-full animate-pulse"></div>
               <div className="w-2 h-2 bg-wellness-500 rounded-full animate-pulse delay-200"></div>
               <div className="w-2 h-2 bg-wellness-500 rounded-full animate-pulse delay-300"></div>

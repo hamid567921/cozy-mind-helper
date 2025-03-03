@@ -1,4 +1,3 @@
-
 interface Message {
   id: string;
   text: string;
@@ -39,6 +38,21 @@ const responses = {
   unsure: [
     "I'm not quite sure I understand. Could you tell me more about how you're feeling?",
     "I want to be helpful. Could you share a bit more about what's on your mind?"
+  ],
+  info_depression: [
+    "Depression is a common but serious mood disorder that causes persistent feelings of sadness and loss of interest in activities. It affects how you feel, think, and handle daily activities. Depression can range from mild to severe and may require treatment including therapy, medication, or both. Remember that depression is a medical condition, not a sign of weakness or character flaw."
+  ],
+  info_anxiety: [
+    "Anxiety is the body's natural response to stress, characterized by feelings of worry, nervousness, or fear. While occasional anxiety is normal, anxiety disorders involve excessive worry that interferes with daily activities. There are several types of anxiety disorders, including generalized anxiety disorder, panic disorder, and phobias. Treatment options include therapy, medication, and lifestyle changes."
+  ],
+  info_stress: [
+    "Stress is the body's response to pressure from challenging or demanding situations. While some stress can be motivating, chronic stress can negatively impact physical and mental health. Common stress management techniques include deep breathing, meditation, regular exercise, maintaining social connections, and ensuring adequate sleep and nutrition."
+  ],
+  info_mindfulness: [
+    "Mindfulness is the practice of paying attention to the present moment without judgment. It involves being aware of your thoughts, feelings, bodily sensations, and surrounding environment. Regular mindfulness practice has been shown to reduce stress, anxiety, and depression while improving focus, emotional regulation, and overall well-being."
+  ],
+  info_therapy: [
+    "Therapy, or psychotherapy, is a collaborative treatment process where a trained mental health professional helps you identify and change troubling emotions, thoughts, and behaviors. There are many types of therapy, including cognitive-behavioral therapy (CBT), dialectical behavior therapy (DBT), interpersonal therapy, and more. Many people find therapy helpful for managing mental health conditions or navigating life challenges."
   ]
 };
 
@@ -46,6 +60,16 @@ const responses = {
 const analyzeSentiment = (text: string): string => {
   text = text.toLowerCase();
   
+  // Check if the message is an information request
+  if (text.match(/\bwhat\s+is\b|\bdefinition\s+of\b|\btell\s+me\s+about\b|\bexplain\b/)) {
+    if (text.match(/\bdepression\b/)) return "info_depression";
+    if (text.match(/\banxiety\b/)) return "info_anxiety";
+    if (text.match(/\bstress\b/)) return "info_stress";
+    if (text.match(/\bmindful|\bmeditation\b/)) return "info_mindfulness";
+    if (text.match(/\btherapy\b|\bcounseling\b|\bpsychotherapy\b/)) return "info_therapy";
+  }
+  
+  // Original sentiment analysis - keep if not an information request
   if (text.match(/(\bhello\b|\bhi\b|\bhey\b|\bgreetings\b)/)) {
     return "greeting";
   }

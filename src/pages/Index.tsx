@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import ChatInterface from '@/components/ChatInterface';
-import MoodTracker from '@/components/MoodTracker';
+import MoodTrackerWrapper from '@/components/MoodTrackerWrapper';
 import ResourcesPanel from '@/components/ResourcesPanel';
 import EmergencySupport from '@/components/EmergencySupport';
 import wavesImage from '@/assets/waves.svg';
@@ -21,7 +20,7 @@ const Index = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'mood':
-        return <MoodTracker />;
+        return <MoodTrackerWrapper />;
       case 'resources':
         return <ResourcesPanel />;
       case 'emergency':
