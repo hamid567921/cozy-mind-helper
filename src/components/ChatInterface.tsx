@@ -3,13 +3,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Smile } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea'; 
 import { Message, generateResponse } from '@/lib/chatbot';
 import { useToast } from "@/hooks/use-toast";
 
 const initialMessages: Message[] = [
   {
     id: '1',
-    text: "Hello! I'm MindfulAI, your mental wellness companion. How are you feeling today? You can also ask me about mental health topics like 'What is depression?' or 'Tell me about anxiety'.",
+    text: "Hello! I'm MindfulAI, your mental wellness companion. I can provide information on mental health topics like depression, anxiety, bipolar disorder, ADHD, and more. I can also help with coping strategies when you're feeling stressed or anxious. How can I assist you today?",
     sender: 'bot',
     timestamp: new Date()
   }
@@ -20,6 +21,7 @@ const ChatInterface: React.FC = () => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
   const scrollToBottom = () => {
@@ -29,6 +31,11 @@ const ChatInterface: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    // Focus the input field when the component mounts
+    inputRef.current?.focus();
+  }, []);
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
@@ -45,7 +52,10 @@ const ChatInterface: React.FC = () => {
     setInput('');
     setIsTyping(true);
     
-    // Simulate bot thinking
+    // Simulate bot thinking with a variable response time based on message length
+    // This makes it feel more natural, like the bot is actually reading and processing
+    const thinkingTime = Math.min(1000 + input.length * 10, 3000); // Between 1-3 seconds
+    
     setTimeout(() => {
       const botResponse = generateResponse(input);
       const botMessage: Message = {
@@ -66,7 +76,20 @@ const ChatInterface: React.FC = () => {
           variant: "destructive"
         });
       }
-    }, 1500);
+    }, thinkingTime);
+    
+    // Focus back on the input after sending
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Send message on Enter (without Shift)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   return (
@@ -113,21 +136,27 @@ const ChatInterface: React.FC = () => {
       </div>
       
       <div className="p-4 border-t bg-white">
-        <div className="flex items-center gap-2">
-          <Input
+        <div className="flex flex-col space-y-2">
+          <Textarea
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            placeholder="Type your message..."
-            className="rounded-full bg-gray-100 border-0 focus-visible:ring-wellness-500"
+            onKeyDown={handleKeyDown}
+            placeholder="Ask me about mental health topics or share how you're feeling..."
+            className="rounded-lg min-h-[80px] resize-none bg-gray-100 border-0 focus-visible:ring-wellness-500"
           />
-          <Button 
-            onClick={handleSendMessage} 
-            size="icon"
-            className="rounded-full bg-wellness-600 hover:bg-wellness-700 text-white"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+          <div className="flex justify-between items-center">
+            <div className="text-xs text-gray-400">
+              Press Enter to send, Shift+Enter for new line
+            </div>
+            <Button 
+              onClick={handleSendMessage} 
+              className="rounded-full bg-wellness-600 hover:bg-wellness-700 text-white px-4"
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Send
+            </Button>
+          </div>
         </div>
       </div>
     </div>
