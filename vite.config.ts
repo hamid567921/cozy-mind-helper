@@ -20,8 +20,9 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Add SPA fallback for client-side routing in production
   build: {
+    // Generate SPA fallback for client-side routing in production
+    outDir: "dist",
     rollupOptions: {
       output: {
         manualChunks: {
