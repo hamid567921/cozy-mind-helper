@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => ({
     host: "localhost",
     port: 8080,
     open: true, // Automatically open browser
+    strictPort: true, // Fail if port is already in use
   },
   plugins: [
     react(),
@@ -21,9 +22,13 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+  },
   build: {
     // Generate SPA fallback for client-side routing in production
     outDir: "dist",
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {
