@@ -42,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
-        console.log('Auth state changed:', event);
+        console.log('Auth state changed:', event, newSession);
         setSession(newSession);
         setUser(newSession?.user ?? null);
         setIsLoading(false);
@@ -57,10 +57,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      console.log('Attempting to sign up with email:', email);
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
+      
+      console.log('Sign up response:', data, error);
       
       if (error) throw error;
       
@@ -85,10 +88,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log('Attempting to sign in with email:', email);
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      console.log('Sign in response:', data, error);
       
       if (error) throw error;
       

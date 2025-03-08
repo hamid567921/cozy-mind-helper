@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import logo from '../assets/logo.svg';
 import wavesImage from '../assets/waves.svg';
 
@@ -26,28 +27,65 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
+  const validateInputs = () => {
+    if (!email || !email.includes('@')) {
+      toast.error('Please enter a valid email address');
+      return false;
+    }
+    
+    if (!password || password.length < 6) {
+      toast.error('Password must be at least 6 characters long');
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    const { error } = await signIn(email, password);
-    setIsSubmitting(false);
     
-    if (!error) {
-      navigate('/');
+    if (!validateInputs()) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      const { error } = await signIn(email, password);
+      
+      if (!error) {
+        toast.success('Signed in successfully!');
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Sign-in error:', error);
+      toast.error('Failed to sign in. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    const { error } = await signUp(email, password);
-    setIsSubmitting(false);
     
-    if (!error) {
-      // Stay on the page to show the success message
-      // The user will need to verify their email
-      setEmail('');
-      setPassword('');
+    if (!validateInputs()) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      const { error } = await signUp(email, password);
+      
+      if (!error) {
+        // Since signUp was successful, we can clear the form
+        setEmail('');
+        setPassword('');
+        toast.success('Account created! Please check your email for verification.', {
+          duration: 5000
+        });
+      }
+    } catch (error) {
+      console.error('Sign-up error:', error);
+      toast.error('Failed to create account. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -103,7 +141,7 @@ const Auth = () => {
                           className="text-xs text-wellness-600 hover:text-wellness-700"
                           onClick={(e) => {
                             e.preventDefault();
-                            alert('Password reset functionality coming soon!');
+                            toast.info('Password reset functionality coming soon!');
                           }}
                         >
                           Forgot password?
