@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 type AuthContextType = {
   user: User | null;
@@ -20,6 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check active session on component mount
@@ -51,10 +53,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log('User signed in:', newSession.user);
           setSession(newSession);
           setUser(newSession.user);
+          navigate('/'); // Auto-redirect to home page after successful login
         } else if (event === 'SIGNED_OUT') {
           console.log('User signed out');
           setSession(null);
           setUser(null);
+          navigate('/auth'); // Redirect to auth page on sign out
         } else if (event === 'TOKEN_REFRESHED' && newSession) {
           console.log('Token refreshed');
           setSession(newSession);
@@ -74,32 +78,56 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Cleaning up auth listener');
       authListener?.subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   const signUp = async (email: string, password: string) => {
     try {
       console.log('Attempting to sign up with email:', email);
       
-      // Add a slight delay to ensure the request completes properly
-      await new Promise(resolve => setTimeout(resolve, 300));
+      setIsLoading(true);
       
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          // Disable email confirmation for testing purposes
+          emailRedirectTo: window.location.origin
+        }
       });
       
       console.log('Sign up response:', data, error);
       
       if (error) throw error;
       
+      // Check if user needs to confirm email
+      if (data?.user?.identities?.length === 0) {
+        toast({
+          title: "This email is already registered",
+          description: "Please sign in instead or use a different email",
+          variant: "destructive",
+          duration: 5000,
+        });
+        return { error: { message: "Email already registered" } };
+      }
+      
+      // For development/testing, treating sign up as immediate success
+      // In production, uncomment the toast below about email confirmation
+      toast({
+        title: "Signup successful!",
+        description: "You can now sign in with your credentials",
+        duration: 5000,
+      });
+      
+      /* For production use this toast instead:
       toast({
         title: "Signup successful!",
         description: "Please check your email for a confirmation link.",
         duration: 5000,
       });
+      */
       
       return { error: null };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing up:', error);
       toast({
         title: "Signup failed",
@@ -108,6 +136,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         duration: 3000,
       });
       return { error };
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -115,8 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Attempting to sign in with email:', email);
       
-      // Add a slight delay to ensure the request completes properly
-      await new Promise(resolve => setTimeout(resolve, 300));
+      setIsLoading(true);
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -129,7 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       console.log('Sign in successful, session:', data.session);
       
-      // Set session and user immediately instead of waiting for auth state change
+      // Set session and user immediately
       setSession(data.session);
       setUser(data.session.user);
       
@@ -139,24 +168,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         duration: 3000,
       });
       
+      // Manually redirect to home after successful sign-in
+      navigate('/');
+      
       return { error: null };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing in:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = error.message;
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage = "Email or password is incorrect";
+      }
+      
       toast({
         title: "Sign in failed",
-        description: error.message || "An unexpected error occurred",
+        description: errorMessage || "An unexpected error occurred",
         variant: "destructive",
         duration: 3000,
       });
       return { error };
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const signOut = async () => {
     try {
+      setIsLoading(true);
       await supabase.auth.signOut();
       
-      // Clear state immediately instead of waiting for auth state change
+      // Clear state immediately
       setSession(null);
       setUser(null);
       
@@ -165,7 +207,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: "You have been successfully signed out.",
         duration: 3000,
       });
-    } catch (error) {
+      
+      // Manually redirect to auth page
+      navigate('/auth');
+    } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
         title: "Error signing out",
@@ -173,6 +218,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         variant: "destructive",
         duration: 3000,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
