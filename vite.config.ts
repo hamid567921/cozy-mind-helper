@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     host: "localhost",
     port: 8080,
     open: true, // Automatically open browser
-    strictPort: true, // Fail if port is already in use
+    strictPort: false, // Allow fallback to another port if 8080 is in use
   },
   plugins: [
     react(),
