@@ -30,8 +30,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) {
         console.error('Error fetching session:', error);
       } else if (data?.session) {
+        console.log('Found existing session:', data.session);
         setSession(data.session);
         setUser(data.session.user);
+      } else {
+        console.log('No active session found');
       }
       
       setIsLoading(false);
@@ -43,14 +46,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         console.log('Auth state changed:', event, newSession);
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
+        
+        if (event === 'SIGNED_IN' && newSession) {
+          console.log('User signed in:', newSession.user);
+          setSession(newSession);
+          setUser(newSession.user);
+        } else if (event === 'SIGNED_OUT') {
+          console.log('User signed out');
+          setSession(null);
+          setUser(null);
+        } else if (event === 'TOKEN_REFRESHED' && newSession) {
+          console.log('Token refreshed');
+          setSession(newSession);
+          setUser(newSession.user);
+        } else if (event === 'USER_UPDATED' && newSession) {
+          console.log('User updated');
+          setSession(newSession);
+          setUser(newSession.user);
+        }
+        
         setIsLoading(false);
       }
     );
 
     // Cleanup subscription
     return () => {
+      console.log('Cleaning up auth listener');
       authListener?.subscription.unsubscribe();
     };
   }, []);
@@ -58,6 +79,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string) => {
     try {
       console.log('Attempting to sign up with email:', email);
+      
+      // Add a slight delay to ensure the request completes properly
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -89,6 +114,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     try {
       console.log('Attempting to sign in with email:', email);
+      
+      // Add a slight delay to ensure the request completes properly
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -97,6 +126,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Sign in response:', data, error);
       
       if (error) throw error;
+      
+      console.log('Sign in successful, session:', data.session);
+      
+      // Set session and user immediately instead of waiting for auth state change
+      setSession(data.session);
+      setUser(data.session.user);
       
       toast({
         title: "Welcome back!",
@@ -120,6 +155,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
+      
+      // Clear state immediately instead of waiting for auth state change
+      setSession(null);
+      setUser(null);
+      
       toast({
         title: "Signed out",
         description: "You have been successfully signed out.",
@@ -144,6 +184,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signOut,
   };
+
+  console.log('Auth context current state:', { user: !!user, session: !!session, isLoading });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

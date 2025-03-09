@@ -13,12 +13,23 @@ const queryClient = new QueryClient();
 
 // Protected route component to handle auth redirects
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { session } = useAuth();
+  const { session, isLoading } = useAuth();
+  
+  console.log('ProtectedRoute check:', { hasSession: !!session, isLoading });
+  
+  // Show loading state if auth is still being checked
+  if (isLoading) {
+    return <div className="flex h-screen items-center justify-center">
+      <div className="animate-spin h-8 w-8 border-4 border-wellness-600 border-t-transparent rounded-full"></div>
+    </div>;
+  }
   
   if (!session) {
+    console.log('No session found, redirecting to auth page');
     return <Navigate to="/auth" replace />;
   }
   
+  console.log('Session is valid, rendering protected content');
   return <>{children}</>;
 };
 

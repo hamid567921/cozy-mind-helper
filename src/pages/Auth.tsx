@@ -17,15 +17,18 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, session } = useAuth();
   const navigate = useNavigate();
+
+  console.log('Auth page rendered with user:', !!user, 'session:', !!session);
 
   // Redirect if user is already authenticated
   useEffect(() => {
-    if (user) {
+    if (user && session) {
+      console.log('User is authenticated, redirecting to home');
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [user, session, navigate]);
 
   const validateInputs = () => {
     if (!email || !email.includes('@')) {
@@ -49,11 +52,17 @@ const Auth = () => {
     setIsSubmitting(true);
     
     try {
+      console.log('Submitting sign in form');
       const { error } = await signIn(email, password);
       
       if (!error) {
+        console.log('Sign in successful, redirecting to home');
         toast.success('Signed in successfully!');
-        navigate('/');
+        
+        // Force a small delay before redirecting to allow auth state to update
+        setTimeout(() => {
+          navigate('/', { replace: true });
+        }, 500);
       }
     } catch (error) {
       console.error('Sign-in error:', error);
@@ -71,6 +80,7 @@ const Auth = () => {
     setIsSubmitting(true);
     
     try {
+      console.log('Submitting sign up form');
       const { error } = await signUp(email, password);
       
       if (!error) {
@@ -80,6 +90,17 @@ const Auth = () => {
         toast.success('Account created! Please check your email for verification.', {
           duration: 5000
         });
+        
+        // For testing purposes, you might want to automatically sign in after sign up
+        // Uncomment the following block if you want to auto sign in
+        /*
+        try {
+          await signIn(email, password);
+          navigate('/');
+        } catch (signInError) {
+          console.error('Auto sign-in error:', signInError);
+        }
+        */
       }
     } catch (error) {
       console.error('Sign-up error:', error);
