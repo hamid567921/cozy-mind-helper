@@ -1,9 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
 
 type AuthContextType = {
   user: User | null;
@@ -38,7 +36,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(dummySession);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   // Simulate automatic login
   useEffect(() => {
@@ -59,9 +56,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         duration: 3000,
       });
       
-      // For demo purposes, we'll just navigate to the main page 
-      // instead of the auth page since we're removing the auth page
-      navigate('/');
+      // For demo purposes, we'll just reload the page
+      window.location.reload();
     } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
