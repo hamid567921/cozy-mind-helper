@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Header from '@/components/Header';
@@ -17,25 +18,51 @@ const Index = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    console.log(`Tab changed to: ${tab}`);
+  };
+
   const renderContent = () => {
     switch (activeTab) {
-      case 'mood':
+      case 'mood tracker':
         return <MoodTrackerWrapper />;
       case 'resources':
         return <ResourcesPanel />;
-      case 'emergency':
+      case 'emergency support':
         return <EmergencySupport />;
+      case 'self-care tools':
+        return <div className="p-6"><h2 className="text-2xl font-bold mb-4">Self-care Tools</h2><p>Self-care tools content coming soon.</p></div>;
+      case 'daily check-in':
+        return <div className="p-6"><h2 className="text-2xl font-bold mb-4">Daily Check-in</h2><p>Daily check-in content coming soon.</p></div>;
       case 'chat':
       default:
         return <ChatInterface />;
     }
   };
 
+  const mapTabToButtonLabel = (tab: string): string => {
+    const mapping: Record<string, string> = {
+      'chat': 'Chat Now',
+      'mood tracker': 'Track Mood',
+      'resources': 'Resources',
+      'emergency support': 'Emergency',
+      'self-care tools': 'Self-care',
+      'daily check-in': 'Check-in'
+    };
+    return mapping[tab] || 'Chat Now';
+  };
+
   return (
     <div className="flex flex-col min-h-screen overflow-hidden bg-gray-50">
       <Header toggleSidebar={toggleSidebar} />
       
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar 
+        isOpen={sidebarOpen} 
+        toggleSidebar={toggleSidebar} 
+        onSelectPage={handleTabChange}
+        activePage={activeTab}
+      />
       
       <main className="flex-1 transition-all duration-300 lg:ml-72">
         {/* Hero section */}
@@ -61,9 +88,9 @@ const Index = () => {
               Connect with MindfulAI for personalized conversation, mood tracking, and access to mental wellness resources — all in one thoughtfully designed space.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
+            <div className="flex flex-wrap justify-center gap-4 animate-fade-in">
               <button 
-                onClick={() => setActiveTab('chat')}
+                onClick={() => handleTabChange('chat')}
                 className={`px-6 py-3 font-medium rounded-lg transition-all duration-300 ${
                   activeTab === 'chat' 
                     ? 'bg-wellness-600 text-white hover:bg-wellness-700' 
@@ -74,9 +101,9 @@ const Index = () => {
               </button>
               
               <button 
-                onClick={() => setActiveTab('mood')}
+                onClick={() => handleTabChange('mood tracker')}
                 className={`px-6 py-3 font-medium rounded-lg transition-all duration-300 ${
-                  activeTab === 'mood' 
+                  activeTab === 'mood tracker' 
                     ? 'bg-calm-500 text-white hover:bg-calm-600' 
                     : 'bg-white border border-calm-200 text-calm-700 hover:bg-calm-50'
                 }`}
@@ -85,7 +112,7 @@ const Index = () => {
               </button>
               
               <button 
-                onClick={() => setActiveTab('resources')}
+                onClick={() => handleTabChange('resources')}
                 className={`px-6 py-3 font-medium rounded-lg transition-all duration-300 ${
                   activeTab === 'resources' 
                     ? 'bg-wellness-800 text-white hover:bg-wellness-900' 
@@ -101,7 +128,7 @@ const Index = () => {
         {/* Content section */}
         <section className="px-4 py-8">
           <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-500 animate-scale-in">
-            <div className="h-[calc(100vh-350px)] min-h-[500px]">
+            <div className="h-[calc(100vh-350px)] min-h-[500px] overflow-y-auto">
               {renderContent()}
             </div>
           </div>
@@ -117,7 +144,7 @@ const Index = () => {
             </div>
             <div className="mt-4 md:mt-0">
               <button 
-                onClick={() => setActiveTab('emergency')}
+                onClick={() => handleTabChange('emergency support')}
                 className="text-sm text-red-600 hover:text-red-800 font-medium"
               >
                 Emergency Resources

@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 interface SidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
+  onSelectPage: (page: string) => void;
+  activePage: string;
 }
 
 interface SidebarNavItem {
@@ -31,11 +33,12 @@ const SidebarNavItem: React.FC<SidebarNavItem> = ({ icon: Icon, label, active, o
   );
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
-  const [activePage, setActivePage] = useState<string>("Chat");
-
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, onSelectPage, activePage }) => {
   const handleNavClick = (label: string) => {
-    setActivePage(label);
+    onSelectPage(label.toLowerCase());
+    if (window.innerWidth < 1024) { // Close sidebar on mobile after selection
+      toggleSidebar();
+    }
   };
 
   return (
@@ -69,37 +72,40 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             <SidebarNavItem 
               icon={Smile} 
               label="Chat" 
-              active={activePage === "Chat"}
+              active={activePage === "chat"}
               onClick={() => handleNavClick("Chat")} 
             />
             <SidebarNavItem 
               icon={Activity} 
               label="Mood Tracker" 
-              active={activePage === "Mood Tracker"}
+              active={activePage === "mood"}
               onClick={() => handleNavClick("Mood Tracker")} 
             />
             <SidebarNavItem 
               icon={Calendar} 
               label="Daily Check-in" 
-              active={activePage === "Daily Check-in"}
+              active={activePage === "daily check-in"}
               onClick={() => handleNavClick("Daily Check-in")} 
             />
             <SidebarNavItem 
               icon={Heart} 
               label="Self-care Tools" 
-              active={activePage === "Self-care Tools"}
+              active={activePage === "self-care tools"}
               onClick={() => handleNavClick("Self-care Tools")} 
             />
             <SidebarNavItem 
               icon={BookOpen} 
               label="Resources" 
-              active={activePage === "Resources"}
+              active={activePage === "resources"}
               onClick={() => handleNavClick("Resources")} 
             />
           </nav>
           
           <div className="p-4 border-t">
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors duration-200">
+            <button 
+              onClick={() => handleNavClick("Emergency Support")}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors duration-200"
+            >
               <Phone className="h-5 w-5" />
               <span>Emergency Support</span>
             </button>
