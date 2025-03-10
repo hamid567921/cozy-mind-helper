@@ -2,10 +2,9 @@
 import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { SignInForm } from './SignInForm';
-import { SignUpForm } from './SignUpForm';
 import { AuthFooter } from './AuthFooter';
 
+// This is a placeholder component since we're using dummy authentication
 export const AuthCard = () => {
   return (
     <Card className="w-full shadow-lg animate-fade-in">
@@ -19,11 +18,19 @@ export const AuthCard = () => {
         
         <CardContent>
           <TabsContent value="signin">
-            <SignInForm />
+            <div className="space-y-4 py-4">
+              <p className="text-sm text-muted-foreground">
+                Sign-in functionality has been replaced with automatic dummy authentication.
+              </p>
+            </div>
           </TabsContent>
           
           <TabsContent value="signup">
-            <SignUpForm />
+            <div className="space-y-4 py-4">
+              <p className="text-sm text-muted-foreground">
+                Sign-up functionality has been replaced with automatic dummy authentication.
+              </p>
+            </div>
           </TabsContent>
         </CardContent>
         

@@ -10,35 +10,53 @@ interface Message {
 const responses = {
   greeting: [
     "Hello! I'm here to support you. How are you feeling today?",
-    "Hi there! I'm your wellness companion. How can I help you today?"
+    "Hi there! I'm your wellness companion. How can I help you today?",
+    "Welcome back! I'm here to chat about mental health and wellbeing. What's on your mind?"
   ],
   anxiety: [
     "It sounds like you might be experiencing some anxiety. Remember to take deep breaths - in for 4 counts, hold for 4, out for 6.",
-    "Anxiety can be challenging. Try grounding yourself by naming 5 things you can see, 4 things you can touch, 3 things you can hear, 2 things you can smell, and 1 thing you can taste."
+    "Anxiety can be challenging. Try grounding yourself by naming 5 things you can see, 4 things you can touch, 3 things you can hear, 2 things you can smell, and 1 thing you can taste.",
+    "When feeling anxious, it can help to focus on the present moment. Maybe try a brief mindfulness exercise, like focusing on your breathing for a few minutes."
   ],
   depression: [
     "I hear that you're feeling down. Remember that it's okay to not be okay sometimes. Is there something small you could do today that might bring you a moment of joy?",
-    "When feeling low, it can help to connect with others. Is there someone you could reach out to today, even just for a brief conversation?"
+    "When feeling low, it can help to connect with others. Is there someone you could reach out to today, even just for a brief conversation?",
+    "Depression can make everything feel overwhelming. Try breaking tasks into smaller steps and celebrate each small achievement."
   ],
   stress: [
     "It sounds like you're under a lot of pressure. Taking even 5 minutes for yourself can help - perhaps a short walk or a cup of tea?",
-    "Stress can be overwhelming. Would it help to write down your thoughts or prioritize what needs your attention first?"
+    "Stress can be overwhelming. Would it help to write down your thoughts or prioritize what needs your attention first?",
+    "When stressed, our bodies tense up. Try progressive muscle relaxation - tense and then release each muscle group from your toes to your head."
   ],
   positive: [
     "I'm glad to hear you're doing well! It's great to celebrate those positive moments.",
-    "That's wonderful to hear! What's something you're looking forward to?"
+    "That's wonderful to hear! What's something you're looking forward to?",
+    "It's great that you're feeling positive! Savoring good moments can help build resilience for challenging times."
   ],
   gratitude: [
     "Practicing gratitude is powerful. What are three small things you appreciate today?",
-    "That's a beautiful perspective. Noticing the good things, even small ones, can really shift our outlook."
+    "That's a beautiful perspective. Noticing the good things, even small ones, can really shift our outlook.",
+    "Gratitude can be a wonderful practice. Even in difficult times, finding small things to appreciate can help our wellbeing."
   ],
   emergency: [
     "It sounds like you're going through a really difficult time. Please remember that immediate help is available by calling or texting 988 in the US to reach the Crisis & Suicide Lifeline.",
-    "I'm concerned about what you're sharing. Please consider reaching out to a crisis helpline like 988 (US) where trained professionals can provide immediate support."
+    "I'm concerned about what you're sharing. Please consider reaching out to a crisis helpline like 988 (US) where trained professionals can provide immediate support.",
+    "Your safety is the highest priority. If you're having thoughts of harming yourself, please reach out to emergency services (911 in the US) or the 988 Suicide & Crisis Lifeline."
   ],
   unsure: [
     "I'm not quite sure I understand. Could you tell me more about how you're feeling?",
-    "I want to be helpful. Could you share a bit more about what's on your mind?"
+    "I want to be helpful. Could you share a bit more about what's on your mind?",
+    "I'd like to understand better. Could you tell me more about what you'd like to discuss today?"
+  ],
+  question: [
+    "I'm here to help with questions about mental health and wellbeing. What specifically would you like to know more about?",
+    "That's a good question. I can provide general information on mental health topics, though I'm not a substitute for professional advice.",
+    "I'd be happy to discuss that. What aspects of this topic are you most interested in learning about?"
+  ],
+  help: [
+    "I'm designed to be a supportive companion for discussing mental health and wellbeing. I can provide information, suggest coping strategies, or just listen. What would be most helpful right now?",
+    "I can help by providing information about mental health topics, suggesting coping strategies for difficult emotions, or just being a space where you can express yourself. How can I support you today?",
+    "I'm here to support your mental wellbeing journey. I can provide information, suggest resources, or discuss coping strategies. What would you find most helpful right now?"
   ],
   
   // Enhanced medical and scientific information
@@ -74,12 +92,17 @@ const responses = {
   ]
 };
 
-// Enhanced sentiment analysis to better identify medical and scientific questions
+// Enhanced sentiment analysis to better identify queries and intents
 const analyzeSentiment = (text: string): string => {
   text = text.toLowerCase();
   
+  // Check for help or capability questions
+  if (text.match(/\bwhat\s+(can|do)\s+you\s+(do|help|offer|provide)\b|\bhow\s+(can|do)\s+you\s+help\b|\bhelp\s+me\b|\bwhat\s+are\s+you\b/)) {
+    return "help";
+  }
+  
   // Check for information requests about specific mental health conditions and topics
-  if (text.match(/\bwhat\s+is\b|\bdefinition\s+of\b|\btell\s+me\s+about\b|\bexplain\b|\bdefine\b|\bhow\s+does\b|\bdescribe\b/)) {
+  if (text.match(/\bwhat\s+is\b|\bdefinition\s+of\b|\btell\s+me\s+about\b|\bexplain\b|\bdefine\b|\bhow\s+does\b|\bdescribe\b|\binfo\b|\binformation\b/)) {
     if (text.match(/\bdepression\b|\bmajor\s+depress\b|\bdepressive\s+disorder\b/)) return "info_depression";
     if (text.match(/\banxiety\b|\banxious\b|\bgad\b|\bpanic\s+disorder\b|\bsocial\s+anxiety\b/)) return "info_anxiety";
     if (text.match(/\bbipolar\b|\bmania\b|\bhypomania\b|\bmood\s+disorder\b|\bmood\s+swings\b/)) return "info_bipolar";
@@ -90,10 +113,13 @@ const analyzeSentiment = (text: string): string => {
     if (text.match(/\btherapy\b|\bcounseling\b|\bpsychotherapy\b|\bcbt\b|\bdbt\b/)) return "info_therapy";
     if (text.match(/\btrauma\b|\bptsd\b|\bpost\s+traumatic\b|\bchildhood\s+trauma\b/)) return "info_trauma";
     if (text.match(/\bmedication\b|\bpsychiatric\s+drug\b|\bantidepressant\b|\bssri\b|\bsnri\b|\bantipsychotic\b/)) return "info_medication";
+    
+    // If we detect a question but not a specific topic
+    return "question";
   }
   
   // Original sentiment analysis for emotional states and greetings
-  if (text.match(/(\bhello\b|\bhi\b|\bhey\b|\bgreetings\b)/)) {
+  if (text.match(/(\bhello\b|\bhi\b|\bhey\b|\bgreetings\b|\bwhat'?s?\s+up\b)/)) {
     return "greeting";
   }
   
@@ -117,7 +143,7 @@ const analyzeSentiment = (text: string): string => {
     return "gratitude";
   }
   
-  if (text.match(/(\bsuicide|kill|die|harm|hurt|end|life\b)/)) {
+  if (text.match(/(\bsuicid|\bkill|\bdie|\bharm|\bhurt|\bend|\blife\b)/)) {
     return "emergency";
   }
   
@@ -131,8 +157,12 @@ const getRandomResponse = (category: string): string => {
 };
 
 export const generateResponse = (userMessage: string): string => {
+  console.log("Analyzing message:", userMessage);
   const sentiment = analyzeSentiment(userMessage);
-  return getRandomResponse(sentiment);
+  console.log("Detected sentiment/intent:", sentiment);
+  const response = getRandomResponse(sentiment);
+  console.log("Generated response type:", sentiment);
+  return response;
 };
 
 export { type Message };

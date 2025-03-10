@@ -21,8 +21,10 @@ export const generateGeminiResponse = async (
   }
 
   try {
+    console.log("Calling Gemini API with key:", apiKey.substring(0, 4) + "***");
+    
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: {
@@ -72,6 +74,7 @@ export const generateGeminiResponse = async (
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error("Gemini API error:", errorData);
       return {
         success: false,
         text: "I encountered an error connecting to my AI services. Please try again later or check your API key.",
@@ -80,6 +83,7 @@ export const generateGeminiResponse = async (
     }
 
     const data = await response.json();
+    console.log("Gemini API response:", data);
     
     // Extract the text from the response
     if (data.candidates && data.candidates[0]?.content?.parts?.length > 0) {
