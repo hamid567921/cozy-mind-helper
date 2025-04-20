@@ -1,24 +1,49 @@
-# Welcome to your Lovable project
+# Welcome to cozy-mind helper
 
 ## Project info
+# 🧠 Cozy Mind Helper
 
-**URL**: https://lovable.dev/projects/640fe081-325d-45ae-8ced-196876c2c95d
+A smart and supportive **Mental Health Chatbot** built to help users improve their mental well-being through conversations, mood tracking, meditation, and goal setting.
 
-## How can I edit this code?
+## 🚀 Project Overview
 
-There are several ways of editing your application.
+**Cozy Mind Helper** is a web-based application that offers mental health support via chatbot interactions. It provides users with personalized tools such as mood tracking, goal management, crisis support, and guided meditation — all aimed at promoting emotional wellness in a friendly and interactive way.
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/640fe081-325d-45ae-8ced-196876c2c95d) and start prompting.
+## 🛠️ Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+### Frontend:
+- React.js (with TypeScript)
+- Tailwind CSS
+- Vite
 
-**Use your preferred IDE**
+### Backend:
+- Node.js (`server/index.js`)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Authentication & Database:
+- Supabase
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
+
+## ✨ Features
+
+- 💬 **AI-Powered Chatbot**: Talk to a mental health chatbot for support and advice.
+- 😊 **Mood Tracker**: Log your daily mood and monitor trends over time.
+- 🎯 **Goal Tracker**: Set and track personal growth goals.
+- 🧘 **Meditation**: Access guided meditation exercises to reduce stress.
+- 🚨 **Crisis Support**: Get emergency help resources when needed.
+- 🔐 **Authentication**: Secure login/logout system using Supabase.
+
+---
+
+## 📁 Project Structure
+
+cozy-mind-helper/ │ ├── public/ # Static assets ├── src/ │ ├── components/ # Reusable UI components │ ├── ui/ # Design system elements │ ├── contexts/ # React contexts for global state │ ├── hooks/ # Custom hooks │ ├── integrations/ │ │ └── supabase/ # Supabase integration │ ├── services/ # API and backend services │ ├── types/ # TypeScript types │ └── pages/ # Application routes ├── server/ │ └── index.js # Backend server ├── supabase/ # Supabase config and migrations └── README.md 
+
+
+
+ 
 
 Follow these steps:
 
@@ -50,20 +75,4 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/640fe081-325d-45ae-8ced-196876c2c95d) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+ 
